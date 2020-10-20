@@ -550,7 +550,7 @@ QString Theme::versionSwitchOutput() const
 
 bool Theme::showVirtualFilesOption() const
 {
-    return enableExperimentalFeatures();
+    return !forceVirtualFilesOption() && enableExperimentalFeatures();
 }
 
 bool Theme::enableExperimentalFeatures() const

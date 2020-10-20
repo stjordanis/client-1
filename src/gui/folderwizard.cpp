@@ -479,8 +479,9 @@ FolderWizardSelectiveSync::FolderWizardSelectiveSync(const AccountPtr &account)
     layout->addWidget(_selectiveSync);
 
     const auto vfsMode = bestAvailableVfsMode();
-    if (Theme::instance()->showVirtualFilesOption() && vfsMode != Vfs::Off && (vfsMode == Vfs::WindowsCfApi || Theme::instance()->enableExperimentalFeatures())) {
-
+    if (Theme::instance()->forceVirtualFilesOption() && vfsMode == Vfs::WindowsCfApi) {
+        // using an else if too make the condition not even more complex...
+    } else if (Theme::instance()->showVirtualFilesOption() && vfsMode != Vfs::Off && (vfsMode == Vfs::WindowsCfApi || Theme::instance()->enableExperimentalFeatures())) {
         _virtualFilesCheckBox = new QCheckBox(tr("Use virtual files instead of downloading content immediately%1").arg(vfsMode == Vfs::WindowsCfApi ? QString() : tr(" (experimental)")));
         connect(_virtualFilesCheckBox, &QCheckBox::clicked, this, &FolderWizardSelectiveSync::virtualFilesCheckboxClicked);
         connect(_virtualFilesCheckBox, &QCheckBox::stateChanged, this, [this](int state) {
@@ -511,7 +512,7 @@ void FolderWizardSelectiveSync::initializePage()
 
 bool FolderWizardSelectiveSync::validatePage()
 {
-    bool useVirtualFiles = _virtualFilesCheckBox && _virtualFilesCheckBox->isChecked();
+    const bool useVirtualFiles = (Theme::instance()->forceVirtualFilesOption() && bestAvailableVfsMode() == Vfs::WindowsCfApi) || (_virtualFilesCheckBox && _virtualFilesCheckBox->isChecked());
     wizard()->setProperty("selectiveSyncBlackList", useVirtualFiles ? QVariant() : QVariant(_selectiveSync->createBlackList()));
     wizard()->setProperty("useVirtualFiles", QVariant(useVirtualFiles));
     return true;

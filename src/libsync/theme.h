@@ -373,6 +373,8 @@ public:
      */
     virtual bool showVirtualFilesOption() const;
 
+    virtual bool forceVirtualFilesOption() const { return true; }
+
     /**
      * @brief Whether to show options considered as experimental.
      *
